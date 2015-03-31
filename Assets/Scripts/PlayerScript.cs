@@ -9,11 +9,11 @@ public class PlayerScript : MonoBehaviour {
 	public GameObject bulletSpawn;
 	public GameObject bullet;
 	public float bulletSpeed;
-	public GUIStyle style;
 	public GameObject canvas;
 	public bool canvasActive = false;
 	public AudioSource bgm;
 	public AudioClip laserSFX;
+	public bool cursorEffects;
 
 	// Use this for initialization
 	void Start () {
@@ -39,8 +39,14 @@ public class PlayerScript : MonoBehaviour {
 			canvas.SetActive(canvasActive);
 		}
 		if (canvasActive == true) {
+			Cursor.visible = true;
+			Cursor.lockState = CursorLockMode.None;
 			bgm.Pause ();
 		} else {
+			if(cursorEffects){
+			Cursor.visible = false;
+			Cursor.lockState = CursorLockMode.Locked;
+			}
 			Time.timeScale = 1f;
 			bgm.UnPause();
 		}
@@ -50,6 +56,9 @@ public class PlayerScript : MonoBehaviour {
 		newBullet.GetComponent<Rigidbody> ().AddForce (newBullet.transform.forward * bulletSpeed, ForceMode.VelocityChange);
 		Destroy (newBullet, 10f);
 		bgm.PlayOneShot (laserSFX);
+	}
+	public void ExitGame(){
+		Application.Quit ();
 	}
 }
 
