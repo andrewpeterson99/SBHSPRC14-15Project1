@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using UnityEngine.UI;
 public class PlayerScript : MonoBehaviour {
 
 	public float moveSpeed;
@@ -14,7 +14,10 @@ public class PlayerScript : MonoBehaviour {
 	public AudioSource bgm;
 	public AudioClip laserSFX;
 	public bool cursorEffects;
-
+	public GameObject panel;
+	public AudioClip exitSound;
+	public bool exitLoad = false;
+	
 	// Use this for initialization
 	void Start () {
 		player = transform;
@@ -42,6 +45,9 @@ public class PlayerScript : MonoBehaviour {
 			Cursor.visible = true;
 			Cursor.lockState = CursorLockMode.None;
 			bgm.Pause ();
+			if(Time.timeScale == 1f){
+				bgm.UnPause();
+			}
 		} else {
 			if(cursorEffects){
 			Cursor.visible = false;
@@ -50,6 +56,9 @@ public class PlayerScript : MonoBehaviour {
 			Time.timeScale = 1f;
 			bgm.UnPause();
 		}
+		if (exitLoad == true) {
+			bgm.volume -=0.01f;
+		}
 	}
 	void Shoot(){
 		GameObject newBullet = (GameObject)Instantiate (bullet, bulletSpawn.transform.position, bulletSpawn.transform.rotation);
@@ -57,7 +66,19 @@ public class PlayerScript : MonoBehaviour {
 		Destroy (newBullet, 10f);
 		bgm.PlayOneShot (laserSFX);
 	}
-	public void ExitGame(){
+	public void LoadNextLevel(){
+		Time.timeScale = 1f;
+		bgm.UnPause ();
+		panel.SetActive (true);
+		StartCoroutine(LevelLoad());
+	} 
+	//exits game after 2.5 second delay (fade on panel), audio exit
+	IEnumerator LevelLoad(){
+		bgm.PlayOneShot (exitSound);
+		yield return new WaitForSeconds (0.5f);
+		exitLoad = true;
+		yield return new WaitForSeconds(2.5f);
+		Debug.Log ("Quit!");
 		Application.Quit ();
 	}
 }
